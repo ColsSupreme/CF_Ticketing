@@ -1,13 +1,13 @@
 CF = nil
 TicketIP = {0,}
-Citizen.CreateThread(function()
-	while CF == nil do 
-        Citizen.Wait(0)
-        TriggerEvent('cf:getSharedObject', function(obj) CF = obj end)
-    end
-    
-end)
 ABT = false
+
+ShowNotification = function(msg)
+	AddTextEntry('cfNotification', msg)
+	SetNotificationTextEntry('cfNotification')
+	DrawNotification(false, true)
+end
+
 
 RegisterCommand("ticket",function(source, args,raw)
         _source = source
@@ -28,7 +28,7 @@ RegisterCommand("ticket",function(source, args,raw)
                 
                 table.insert(TicketIP,person)
                 if person == nil then
-                    CF.ShowNotification(_source,"~r~You need to enter who you are ticketing and how much, it must be their id")
+                    ShowNotification(_source,"~r~You need to enter who you are ticketing and how much, it must be their id")
                     for k,v in ipairs(TicketIP) do  
                         if TicketIP[k] == _source then 
                             table.remove(TicketIP,k)
@@ -44,8 +44,8 @@ RegisterCommand("ticket",function(source, args,raw)
                         end
                     end
                 else    
-                    CF.ShowNotification(_source,"You have given a ticket of ~r~" .. amount .. "$ ~c~~w~ to" .. GetPlayerName(person)) 
-                    CF.ShowNotification(person,"You have been ticketed ~r~" .. amount .. "$ ~c~~w~ press ~r~ E ~w~ to sign and ~r~ F ~w~ to not sign. You were given this ticket by " .. GetPlayerName(_source))
+                    ShowNotification(_source,"You have given a ticket of ~r~" .. amount .. "$ ~c~~w~ to" .. GetPlayerName(person)) 
+                    ShowNotification(person,"You have been ticketed ~r~" .. amount .. "$ ~c~~w~ press ~r~ E ~w~ to sign and ~r~ F ~w~ to not sign. You were given this ticket by " .. GetPlayerName(_source))
                     TriggerClientEvent("RequestTicket",person,_source ,person, amount)
                 end
                 
@@ -63,8 +63,8 @@ AddEventHandler("Signed", function(_source ,person, amount)
         Target.removeMoney(amount)
         local leocut = amount/10
         Revipient.addMoney(leocut)
-        CF.ShowNotification(person,"~g~You have made " ..leocut .. "$ from this ticket" )
-        CF.ShowNotification(_source,"~r~You have paid " ..amount .. "$ from this ticket" )
+        ShowNotification(person,"~g~You have made " ..leocut .. "$ from this ticket" )
+        ShowNotification(_source,"~r~You have paid " ..amount .. "$ from this ticket" )
         exports.logs:discord(":warning: **" ..GetPlayerName(_source) .." (" .. _source .. ")** has been ticketed ".. amount .. "$ by **" .. GetPlayerName(person) .."(".. person ..")**" ,"banking")
         exports.logs:discord(":warning: **" ..GetPlayerName(_source) .." (" .. _source .. ")** has been ticketed ".. amount .. "$ by **" .. GetPlayerName(person) .."(".. person ..")**" ,"leoactions")
     elseif Target.getBank() >= amount then
@@ -72,13 +72,13 @@ AddEventHandler("Signed", function(_source ,person, amount)
         Target.removeBank(amount)
         local leocut = amount/10
         Revipient.addMoney(leocut)
-        CF.ShowNotification(_source,"~r~You have paid " ..amount .. "$ from this ticket" )
-        CF.ShowNotification(person,"~g~You have made " ..leocut .. "$ from this ticket" )
+        ShowNotification(_source,"~r~You have paid " ..amount .. "$ from this ticket" )
+        ShowNotification(person,"~g~You have made " ..leocut .. "$ from this ticket" )
         exports.logs:discord(":warning: **" ..GetPlayerName(_source) .." (" .. _source .. ")** has been ticketed ".. amount .. "$ by **" .. GetPlayerName(person) .."(".. person ..")**" ,"banking")
         exports.logs:discord(":warning: **" ..GetPlayerName(_source) .." (" .. _source .. ")** has been ticketed ".. amount .. "$ by **" .. GetPlayerName(person) .."(".. person ..")**" ,"leoactions")
     else
-        CF.ShowNotification(person,"~r~They cannot afford the ticket")
-        CF.ShowNotification(_source,"~r~You cannot afford the ticket")
+        ShowNotification(person,"~r~They cannot afford the ticket")
+        ShowNotification(_source,"~r~You cannot afford the ticket")
     end
     local personticket = {person,_source}
     for k,v in ipairs(TicketIP) do  
@@ -112,9 +112,9 @@ RegisterCommand("Clearticket", function(source, args,raw)
         for k,v in ipairs(TicketIP) do
             if TicketIP[k] == person then
                 table.remove(TicketIP,k)
-                CF.ShowNotification(_source,"~r~Pending ticket removed")
+                ShowNotification(_source,"~r~Pending ticket removed")
             else
-                CF.ShowNotification(_source,"~r~This person dose not have a ticket")
+                ShowNotification(_source,"~r~This person dose not have a ticket")
             end
         end
     end
